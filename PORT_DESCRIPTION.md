@@ -1,7 +1,8 @@
 # Port description
 
 Detailed handshake, framing, and timing for `uart_top` and the
-optional `uart_axi4lite` wrapper.
+optional `uart_axi4lite` wrapper. The behaviour below describes design
+intent; it is not verified.
 
 ## Reset
 
@@ -21,9 +22,8 @@ divisor = round(clk_freq_hz / (16 * baud_rate_hz)) - 1
 
 For `clk = 50 MHz` and `baud = 115_200`: `divisor = 26`. Actual rate
 is `50e6 / (27 * 16) = 115_741`, ~0.47% fast. The 16x oversampler with
-mid-bit majority vote tolerates up to roughly **2% accumulated drift
-across one frame**, so any divisor that lands within that bound is
-reliable.
+mid-bit majority vote is intended to tolerate up to roughly **2% accumulated
+drift across one frame** (not verified).
 
 `divisor_load_i = 1` resets the internal sample / bit counters and
 loads the new divisor on the next clock edge. Changing divisor
@@ -63,10 +63,10 @@ rx_rd_data_o        _________________________________|byte|__
 
 The deserializer:
 
-1. Synchronises `rx_i` through a 3-FF chain.
+1. Synchronises `rx_i` through a 3-FF chain (intended to reduce metastability risk; not verified).
 2. Detects a high->low edge while idle. Waits 8 oversample ticks
    (= mid of start bit). If the line is still 0, locks on; otherwise
-   abandons (rejects glitches).
+   abandons (intended to reject glitches; not verified).
 3. For each data bit, captures three samples around bit-centre
    (oversample ticks 7, 8, 9) and majority-votes them.
 4. After the data bits, samples parity (if enabled), then the first
@@ -74,8 +74,8 @@ The deserializer:
    does not match, `parity_err_o` latches. Otherwise the byte is
    pushed into the RX FIFO.
 5. Returns to IDLE 6 oversample ticks after the stop-bit decision
-   so the next falling-edge can be caught early — this is what gives
-   the design its drift tolerance across frames.
+   so the next falling-edge can be caught early — this is intended to give
+   the design its drift tolerance across frames (not verified).
 
 ## Error flags
 
@@ -165,4 +165,4 @@ STATUS bit layout:
 | [25]    | rts_n (current RTS state)          |
 | [26]    | irq                                |
 
-Out-of-range / mis-aligned accesses receive DECERR per AXI4-Lite §A8.1.1.
+Out-of-range / mis-aligned accesses are intended to receive DECERR per AXI4-Lite §A8.1.1; AXI4-Lite compliance is not verified.

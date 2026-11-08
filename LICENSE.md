@@ -2,6 +2,8 @@
 
 This IP core is dual-licensed.
 
+SPDX-License-Identifier expression: `GPL-3.0-or-later OR LicenseRef-Commercial`
+
 ## GPL-3.0-or-later (open-source use)
 
 Copyright (C) 2026 Ayoub Achour
@@ -12,7 +14,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-The full GPL-3.0 text is canonical and lives at the FSF link above. A copy is available for convenience: <https://www.gnu.org/licenses/gpl-3.0.txt>.
+The full GPL-3.0 text is in [COPYING](COPYING). It is also available from the FSF: <https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 **What this means in practice**: if you use this RTL in a project, the project itself (including any FPGA bitstream produced from it) must also be released under GPL-3.0-or-later. The GPL is "viral" — your downstream users must receive the same rights you received, including the right to the complete corresponding source.
 
@@ -26,15 +28,14 @@ The commercial license:
 
 - removes the GPL viral requirement,
 - grants you (and your company) the right to integrate the core into closed-source products,
-- gives you a clear, written grant you can show to your customers and to a due-diligence auditor,
-- includes a 1-year fix window on bugs and clarifications.
+- gives you a clear, written grant you can show to your customers and to a due-diligence auditor.
 
-Pricing tiers and the purchase link are listed at the project page (see the URL in the README citation block). For tier inquiries, email the address listed in the project page.
+Commercial licenses are available on request: open a GitHub issue titled 'Commercial license request'. Do not post confidential details in the issue. Any commercial license is provided as is, without warranty, support or maintenance. This core is unverified (see README).
 
 ## Trademarks
 
-"UART" (Universal Asynchronous Receiver Transmitter) is a public class of devices, not a trademark. "RS-232" is an EIA / TIA standard. "AXI4-Lite" is part of the ARM AMBA specification (IHI 0022). No trademark claim is made on any of these names. You may freely state that this core implements an asynchronous serial interface or an AXI4-Lite-attached UART in your product documentation.
+"UART" (Universal Asynchronous Receiver Transmitter) is a public class of devices, not a trademark. "RS-232" is an EIA / TIA standard. "AXI4-Lite" is part of the ARM AMBA specification (IHI 0022). No trademark claim is made on any of these names. AMBA and AXI are trademarks or registered trademarks of Arm Limited. This project is not affiliated with or endorsed by Arm. This core is intended to implement an asynchronous serial interface with an AXI4-Lite wrapper; AXI4-Lite compliance is not verified.
 
 ## Patents
 
-UART framing (start bit / data / parity / stop bit / mark idle) has been in the public domain since the 1970s. The 16x oversampling sample-point recovery is also unencumbered. The author makes no warranty about patent freedom in any specific jurisdiction; if you ship hardware globally you are responsible for your own patent due diligence.
+UART framing (start bit / data / parity / stop bit / mark idle) has been in the public domain since the 1970s. The author has not performed a patent search on the 16x oversampling sample-point recovery and makes no warranty about patent freedom in any specific jurisdiction; if you ship hardware globally you are responsible for your own patent due diligence.

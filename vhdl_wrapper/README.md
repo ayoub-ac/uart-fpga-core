@@ -9,11 +9,10 @@ directly.
 
 **Wrapper only.** The UART datapath (baud generator, TX/RX FSMs, FIFOs,
 flow control) lives in `rtl/*.sv` and is instantiated as a SystemVerilog
-black-box. Mixed-language elaboration is supported by every commercial
-simulator and synthesiser the core has been tested against.
+black-box. Mixed-language elaboration requires a simulator or synthesiser that
+supports it; the wrapper has not been verified with any specific tool.
 
-A pure VHDL re-implementation of the datapath is on the roadmap
-(Premium tier).
+No pure VHDL re-implementation of the datapath exists.
 
 ## Usage
 
@@ -41,6 +40,6 @@ from the repository root. The target is a no-op (with a notice) if
 
 ## What this wrapper does NOT change
 
-* Latency, throughput, area: identical to `uart_top.sv`.
+* Latency, throughput, area: intended to be identical to `uart_top.sv`; not verified.
 * Endianness: same as the SV core (LSB-first on the wire).
 * Reset polarity: still active-low synchronous (`rst_ni`).

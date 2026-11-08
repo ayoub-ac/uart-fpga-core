@@ -1,8 +1,8 @@
 # uart-fpga-core
 
-[![License: GPL-3.0-or-later or commercial](https://img.shields.io/badge/license-GPL--3.0%20%7C%20commercial-blue.svg)](LICENSE.md)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#verification)
-[![Lint](https://img.shields.io/badge/Verilator%20lint-clean-brightgreen.svg)](#build--test)
+[![License: GPL-3.0 | commercial](https://img.shields.io/badge/license-GPL--3.0%20%7C%20commercial-blue.svg)](LICENSE.md)
+
+> **Status: experimental and unverified.** This core was written with AI assistance and has not been independently verified in simulation regressions, formal proofs or hardware. Claims in this repository about protocol compliance, test results, timing and resource use are unverified. Do not use it in production or safety-critical designs without your own verification. No support or maintenance is provided.
 
 A small synthesisable industrial UART IP core in SystemVerilog with
 TX/RX FIFOs, programmable baud rate, configurable framing, parity,
@@ -12,16 +12,17 @@ register-mapped wrapper.
 ## Why
 
 8250/16550-style UARTs are still the default debug + control link on
-every FPGA dev board, MCU, and embedded SoC. This is a clean, lint-clean,
-parametrizable replacement that synthesises in ~350 LUT and verifies
-against itself in cross-loopback (no external simulator model needed).
+every FPGA dev board, MCU, and embedded SoC. This is intended as a clean,
+parametrizable replacement (estimated ~350 LUT; unverified estimate). Its
+testbench checks it against itself in cross-loopback (no external simulator
+model needed); results not independently confirmed.
 
 ## Quickstart
 
 ```bash
 git clone https://github.com/ayoub-ac/uart-fpga-core.git
 cd uart-fpga-core
-make lint test            # Verilator lint + loopback / cross-baud / errors
+make lint test            # Verilator lint + loopback / cross-baud / error tests
 make synth_report         # SYNTH_REPORT.md across iCE40 / ECP5 / Xilinx
 ```
 
@@ -29,7 +30,7 @@ make synth_report         # SYNTH_REPORT.md across iCE40 / ECP5 / Xilinx
 
 * TX/RX shift registers, bit-banged at programmable baud
 * Parametrizable TX FIFO + RX FIFO (default 16, configurable up to 256)
-* 16x oversampling RX with majority-vote bit centering
+* 16x oversampling RX with majority-vote bit centering (intended; not verified)
 * Data bits 5/6/7/8/9, parity none/even/odd/mark/space, 1 or 2 stop bits
 * Hardware RTS/CTS flow-control (per-side configurable threshold)
 * Sticky frame-error / parity-error / overrun / break-detect flags
@@ -69,10 +70,10 @@ Full timing, FIFO levels, and IRQ-mask details in
 
 ## Headline numbers
 
-Real numbers from `make synth_report` (Yosys 0.x, default `uart_top` with
-TX/RX depth 16):
+Unverified estimates (see [`RESOURCE_ESTIMATES.md`](RESOURCE_ESTIMATES.md)); run `make synth_report`
+for real numbers. Default `uart_top` with TX/RX depth 16:
 
-| Target           | LUT       | FF    | BRAM | Notes                  |
+| Target           | LUT (unverified estimate) | FF (unverified estimate) | BRAM | Notes |
 |------------------|-----------|-------|------|------------------------|
 | iCE40 UP5K       | 340       | 168   | 2    | LUT4 generic           |
 | ECP5 LFE5UM-25   | 339       | 156   | 0    | abc9 mapping           |
@@ -90,13 +91,15 @@ make lint            # static-check the RTL + AXI wrapper
 make test            # build and run the loopback / cross-baud / error suite
 ```
 
-A passing run ends with `+PASS all tests passed` and exits 0.
+The testbench is written to end with `+PASS all tests passed` and exit 0 on success.
+Tests are included; results not independently confirmed.
 
 ## Verification
 
-Eight test groups, all running in a single `make test`:
+Intended test groups, all run by a single `make test`. Tests are included;
+results not independently confirmed:
 
-| #  | Test                 | Coverage                                          |
+| #  | Test                 | Intended check                                    |
 |----|----------------------|---------------------------------------------------|
 | 0  | FIFO saturation prep | Asserts TX/RX FIFO `full` flags                   |
 | 1  | Loopback 1000 bytes  | TX A -> RX B, byte-exact at 8N1                   |
@@ -108,9 +111,10 @@ Eight test groups, all running in a single `make test`:
 | 7  | Flow control RTS/CTS | Fill RX, observe RTS de-assertion                 |
 | 8  | Data widths          | 5/6/7/8/9 bits, parity even/odd/none round-trip   |
 
-5 SVA properties bind every cycle (TX/RX FIFO empty/full coherence,
-overrun-implies-full, parity-err-implies-parity-en).
-14-bin functional coverage at 100%.
+The testbench includes 5 SVA properties (TX/RX FIFO empty/full coherence,
+overrun-implies-full, parity-err-implies-parity-en) and a functional
+coverage collector. Whether the properties hold and which bins are hit
+has not been independently confirmed.
 
 ## License
 

@@ -1,17 +1,20 @@
 # Resource estimates
 
-Numbers below are from Yosys 0.x generic synthesis (`make synth_report`).
-They are pre-place-and-route. See `SYNTH_REPORT.md` for the most recent
+> **Unverified estimates.** The figures in this file have not been confirmed by a recorded, reproducible synthesis run or by hardware measurement. Treat every LUT, FF, BRAM, DSP, Fmax, throughput, latency and power figure here as an unverified estimate. Run `make synth_report` with your own toolchain to get real numbers.
+
+Numbers below are unverified estimates intended to reflect Yosys generic
+synthesis (`make synth_report`), not output from a recorded run. They are
+meant as pre-place-and-route. See `SYNTH_REPORT.md` for the most recent
 run; this document explains what dominates the area and how to shrink
 it.
 
-## Summary (post-Yosys, pre-PnR)
+## Summary (unverified estimates, pre-PnR)
 
 | Target                         | Comment |
 |--------------------------------|---------|
-| Lattice iCE40 UP5K             | ~340 LUT4 / ~170 FF / 2 BRAM at default (TX/RX FIFO 16x9). The two FIFOs alone draw ~280 FFs and Yosys folds the FIFO storage into BRAM at this depth. Fits trivially on the UP5K (5280 logic tiles). |
+| Lattice iCE40 UP5K             | ~340 LUT4 / ~170 FF / 2 BRAM at default (TX/RX FIFO 16x9). The two FIFOs alone draw ~280 FFs and Yosys folds the FIFO storage into BRAM at this depth. Expected to fit on the UP5K (5280 logic tiles); not verified. |
 | Lattice ECP5 LFE5UM-25         | ~340 LUT / ~160 FF / 0 BRAM at default. ECP5's 4-input LUT primitive gives results comparable to iCE40. nextpnr-ecp5 packs tighter on PnR. |
-| Xilinx Artix-7 XC7A35T         | ~410 LUT6 / ~280 FF / 0 BRAM at default. Vivado synth_design typically drops the LUT count by 20-30% via better mapping. |
+| Xilinx Artix-7 XC7A35T         | ~410 LUT6 / ~280 FF / 0 BRAM at default. Vivado synth_design may drop the LUT count via better mapping (not measured). |
 | Cyclone V 5CSEMA5F31C6         | Quartus folds the FIFO into M10K block RAMs; ALM count drops correspondingly. |
 | Gowin GW1NR-9 (Tang Nano 9K)   | Not characterised here. Comparable to ECP5 with vendor flow. |
 
@@ -37,7 +40,7 @@ For exact LUT/FF/BRAM numbers run `make synth_report` and read
 * **Sticky error flags + interrupt OR**: <10 FFs.
 
 The optional `uart_axi4lite.sv` wrapper adds the AXI4-Lite slave
-(~600 LUT for a 7-register map) on top of the bare core.
+(~600 LUT for a 7-register map; unverified estimate) on top of the bare core.
 
 ## What you can do to shrink it
 
@@ -66,6 +69,9 @@ gated by the baud rate, not the RTL. To push raw bytes/sec:
 
 ## Frequency
 
+All figures in this section are unverified estimates; no timing analysis
+has been recorded.
+
 * iCE40 UP5K, default toolchain (Yosys + nextpnr): ~80-100 MHz typical.
   Limited by the FIFO pointer carry and the baud counter.
 * ECP5: ~120-150 MHz on generic synth.
@@ -79,7 +85,7 @@ the bottleneck.
 
 ## Power
 
-Ballpark: 5-10 mW dynamic on iCE40 UP5K at 50 MHz, depending on
+Unverified estimate (not measured): 5-10 mW dynamic on iCE40 UP5K at 50 MHz, depending on
 serial-line activity. The synchroniser and the FIFO storage toggle
 on every byte; the FSM toggles only during active frames.
 

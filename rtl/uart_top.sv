@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later OR Commercial
+// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Commercial
 //
 // UART top-level combining baud generator, TX path (FIFO + serializer),
 // RX path (deserializer + FIFO), error flags, and RTS/CTS hardware

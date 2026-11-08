@@ -2,10 +2,12 @@
 
 `uart_top` is a transport: it does not encrypt, does not authenticate,
 and does not validate payload semantics. This document lists the
-hardware-level safety properties the design DOES guarantee, the
+hardware-level safety properties the design is intended to provide, the
 attacker model it does NOT cover, and how to harden a deployment.
+None of the properties below has been independently verified; treat them
+as design intent.
 
-## What the core defends against
+## What the core is intended to defend against (not verified)
 
 ### 1. Frame structure validation
 
@@ -16,7 +18,8 @@ attacker model it does NOT cover, and how to harden a deployment.
 * `parity_err_o` latches when the configured parity does not match the
   received parity. Same sticky / explicit-clear semantics.
 * `overrun_o` latches when the RX FIFO has been pushed past its capacity.
-  No data is silently dropped without raising the flag.
+  It is intended that no data is silently dropped without raising the flag;
+  not verified.
 * `break_o` latches when the RX line stays low for more than one frame
   time (~11 bit times). This is the canonical "remote sender pulled the
   line down" indication — useful as a soft-reset trigger or as a
@@ -24,12 +27,14 @@ attacker model it does NOT cover, and how to harden a deployment.
 
 ### 2. Synchroniser hardening
 
-The RX line is registered through a 3-FF synchroniser chain to defeat
-metastability when `rx_i` arrives from a clock domain not aligned with
-`clk_i`. There is no path that could carry a glitched sample through
-the FSM.
+The RX line is registered through a 3-FF synchroniser chain intended to
+reduce metastability risk when `rx_i` arrives from a clock domain not
+aligned with `clk_i`; not verified. Glitch rejection in the FSM is
+intended; not verified.
 
 ### 3. Bounded counters
+
+Intended; not verified:
 
 * The baud-generator counter is bounded to `divisor_i` and resets on
   every wrap.
@@ -39,9 +44,9 @@ the FSM.
   by the FSM transition; an out-of-range index cannot drive the shift
   register.
 
-The functional coverage report in `tb/uart_cov.sv` includes 14 sticky
-bins covering all error paths; a regression that fails to trip any of
-them blocks the gate.
+The functional coverage collector in `tb/uart_cov.sv` defines sticky bins
+intended to cover the error paths. Tests are included; results not
+independently confirmed.
 
 ## What the core does NOT cover
 
@@ -92,6 +97,6 @@ them blocks the gate.
 ## Reporting issues
 
 Found a bug, a state machine corner case we missed, or a discrepancy
-with a real UART trace? Open an issue or contact the email in the
-README. Coordinated disclosure welcome. We do not currently offer a
-bug bounty.
+with a real UART trace? Open a GitHub issue (do not include confidential
+details). No support or maintenance is provided. We do not currently
+offer a bug bounty.
